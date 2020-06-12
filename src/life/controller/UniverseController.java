@@ -4,9 +4,14 @@ import life.model.GlobalData;
 import life.model.Universe;
 import life.view.UniverseView;
 
+import javax.swing.*;
+
 public class UniverseController {
     private final int side = GlobalData.SIDE;
     private final UniverseView universeView;
+
+    private Timer timer;
+    private int generation = 1;
 
     public UniverseController(UniverseView universeView) {
         this.universeView = universeView;
@@ -17,16 +22,29 @@ public class UniverseController {
         universe.createUniverse();
         universeView.print(universe);
 
-        for (int generation = 2; generation <= GlobalData.NUMBER_OF_GENERATIONS; generation++) {
+        timer = new Timer(GlobalData.TIME_BETWEEN_GENERATIONS, event ->{
+            if (generation > GlobalData.NUMBER_OF_GENERATIONS) {
+                return;
+            }
+
             evolveOneGeneration(universe);
             universe.setGenerationNumber(generation);
             universeView.print(universe);
+            generation++;
+        });
+        timer.setInitialDelay(1000);
+        timer.start();
 
-            try {
-                Thread.sleep(GlobalData.TIME_BETWEEN_GENERATIONS);
-            } catch (InterruptedException ignored) {
-            }
-        }
+//        for (int generation = 2; generation <= GlobalData.NUMBER_OF_GENERATIONS; generation++) {
+//            evolveOneGeneration(universe);
+//            universe.setGenerationNumber(generation);
+//            universeView.print(universe);
+//
+//            try {
+//                Thread.sleep(GlobalData.TIME_BETWEEN_GENERATIONS);
+//            } catch (InterruptedException ignored) {
+//            }
+//        }
     }
 
     private void evolveOneGeneration(Universe universe) {
