@@ -21,6 +21,11 @@ public class UniverseController {
             evolveOneGeneration(universe);
             universe.setGenerationNumber(generation);
             universeView.print(universe);
+
+            try {
+                Thread.sleep(GlobalData.TIME_BETWEEN_GENERATIONS);
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 

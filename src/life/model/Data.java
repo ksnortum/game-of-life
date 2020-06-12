@@ -1,20 +1,20 @@
 package life.model;
 
-import life.view.GameOfLifeCell;
+import life.view.GameOfLifePanel;
 
 import javax.swing.*;
 
 public class Data {
-    private GameOfLifeCell[][] cells;
+    private GameOfLifePanel gameOfLifePanel = null;
     private JLabel generationNumberLabel;
     private JLabel aliveNumberLabel;
 
-    public GameOfLifeCell[][] getCells() {
-        return cells;
+    public GameOfLifePanel getGameOfLifePanel() {
+        return gameOfLifePanel;
     }
 
-    public void setCells(GameOfLifeCell[][] cells) {
-        this.cells = cells;
+    public void setGameOfLifePanel(GameOfLifePanel gameOfLifePanel) {
+        this.gameOfLifePanel = gameOfLifePanel;
     }
 
     public JLabel getGenerationNumberLabel() {

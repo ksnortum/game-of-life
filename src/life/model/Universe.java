@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Universe {
     private final int side = GlobalData.SIDE;
-    private boolean[][] universeMatrix;
+    private boolean[][] universeMatrix = null;
     private int generationNumber;
 
     public void createUniverse() {

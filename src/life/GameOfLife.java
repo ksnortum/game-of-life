@@ -1,11 +1,8 @@
 package life;
 
 import life.controller.UniverseController;
-import life.model.CellStatus;
 import life.model.Data;
-import life.model.GlobalData;
-import life.view.GameOfLifeCell;
-import life.view.GameOfLifeGrid;
+import life.view.GameOfLifePanel;
 import life.view.UniverseView;
 
 import javax.swing.*;
@@ -53,21 +50,9 @@ public class GameOfLife extends JFrame {
         add(textDisplay);
 
         JPanel graphicDisplay = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        GameOfLifeGrid gridPanel = new GameOfLifeGrid();
-        int side = GlobalData.SIDE;
-        GameOfLifeCell[][] cells = new GameOfLifeCell[side][side];
-
-        for (int row = 0; row < side; row++) {
-            for (int column = 0; column < side; column++) {
-                GameOfLifeCell cell = new GameOfLifeCell(column * side, row * side, CellStatus.FILL);
-                cell.setVisible(false);
-                gridPanel.add(cell);
-                cells[row][column] = cell;
-            }
-        }
-
-        data.setCells(cells);
-        graphicDisplay.add(gridPanel);
+        GameOfLifePanel gameOfLifePanel = new GameOfLifePanel();
+        data.setGameOfLifePanel(gameOfLifePanel);
+        graphicDisplay.add(gameOfLifePanel);
         add(graphicDisplay);
 
         return data;

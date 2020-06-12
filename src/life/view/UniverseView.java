@@ -14,20 +14,11 @@ public class UniverseView {
     public void print(Universe universe) {
         data.getGenerationNumberLabel().setText("#" + universe.getGenerationNumber());
         data.getAliveNumberLabel().setText(String.valueOf(universe.totalCellsAlive()));
-        int side = GlobalData.SIDE;
-        GameOfLifeCell[][] cells = data.getCells();
-        boolean[][] matrix = universe.getUniverseMatrix();
-
-        for (int row = 0; row < side; row++) {
-            for (int column = 0; column < side; column++) {
-                cells[row][column].setVisible(matrix[row][column]);
-            }
-        }
-
-        try {
-            Thread.sleep(GlobalData.TIME_BETWEEN_GENERATIONS);
-        } catch (InterruptedException ignored) {
-        }
+        GameOfLifePanel gameOfLifePanel = data.getGameOfLifePanel();
+        gameOfLifePanel.setUniverse(universe);
+        //gameOfLifePanel.repaint();
+        int length = GlobalData.SIDE * GlobalData.PIXELS_PER_SIDE + GlobalData.EXTRA_PIXELS;
+        gameOfLifePanel.paintImmediately(0, 0, length, length);
     }
 
 }
