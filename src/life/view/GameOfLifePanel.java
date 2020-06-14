@@ -27,10 +27,10 @@ public class GameOfLifePanel extends JPanel {
         super.paintComponent(g);
 
         // Paint grid
-        for (int i = 0; i < length + 2; i += side) {
-            g.drawLine(0, i, length, i); // vertical line
-            g.drawLine(i, 0, i, length); // horizontal line
-        }
+//        for (int i = 0; i < length + 2; i += side) {
+//            g.drawLine(0, i, length, i); // vertical line
+//            g.drawLine(i, 0, i, length); // horizontal line
+//        }
 
         // Paint cells
         if (universe == null) {
@@ -52,5 +52,8 @@ public class GameOfLifePanel extends JPanel {
                 }
             }
         }
+
+        g.drawLine(0, length, length, length); // East vertical line
+        g.drawLine(length, 0, length, length); // South horizontal line
     }
 }

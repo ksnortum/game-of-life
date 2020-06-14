@@ -8,6 +8,8 @@ public class Data {
     private GameOfLifePanel gameOfLifePanel = null;
     private JLabel generationNumberLabel;
     private JLabel aliveNumberLabel;
+    private GameOfLifeState state = GameOfLifeState.RESUME;
+    private Lock lock;
 
     public GameOfLifePanel getGameOfLifePanel() {
         return gameOfLifePanel;
@@ -31,5 +33,21 @@ public class Data {
 
     public void setAliveNumberLabel(JLabel aliveNumberLabel) {
         this.aliveNumberLabel = aliveNumberLabel;
+    }
+
+    public GameOfLifeState getState() {
+        return state;
+    }
+
+    public void setState(GameOfLifeState state) {
+        this.state = state;
+    }
+
+    public Lock getLock() {
+        return lock;
+    }
+
+    public void setLock(Lock lock) {
+        this.lock = lock;
     }
 }

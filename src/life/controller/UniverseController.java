@@ -1,20 +1,24 @@
 package life.controller;
 
-import life.model.GlobalData;
-import life.model.Universe;
+import life.model.*;
 import life.view.UniverseView;
 
 import javax.swing.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class UniverseController {
     private final int side = GlobalData.SIDE;
     private final UniverseView universeView;
+    private final Data data;
+    private final Lock lock;
 
-    private Timer timer;
     private int generation = 1;
 
     public UniverseController(UniverseView universeView) {
         this.universeView = universeView;
+        data = universeView.getData();
+        lock = data.getLock();
     }
 
     public void evolve() {
@@ -22,9 +26,22 @@ public class UniverseController {
         universe.createUniverse();
         universeView.print(universe);
 
-        timer = new Timer(GlobalData.TIME_BETWEEN_GENERATIONS, event ->{
-            if (generation > GlobalData.NUMBER_OF_GENERATIONS) {
-                return;
+        Timer timer = new Timer(GlobalData.TIME_BETWEEN_GENERATIONS, event -> {
+            if (data.getState() == GameOfLifeState.STOP) { // TODO implement
+                Timer timer1 = (Timer) event.getSource();
+                timer1.stop();
+            } else if (data.getState() == GameOfLifeState.PAUSE) {
+                System.out.println("In timer pause"); // debug
+                synchronized (lock) {
+                    while (data.getState() == GameOfLifeState.PAUSE) {
+                        try {
+                            System.out.println("  before wait"); // debug
+                            lock.wait();
+                        } catch (InterruptedException ignored) {
+                        }
+                        System.out.println("  after wait"); // debug
+                    }
+                }
             }
 
             evolveOneGeneration(universe);

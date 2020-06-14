@@ -21,4 +21,7 @@ public class UniverseView {
         gameOfLifePanel.paintImmediately(0, 0, length, length);
     }
 
+    public Data getData() {
+        return data;
+    }
 }
