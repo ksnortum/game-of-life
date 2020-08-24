@@ -1,5 +1,5 @@
 package life.model;
 
 public enum GameOfLifeState {
-    PAUSE, RESUME, STOP
+    PAUSE, RESUME, RESTART
 }

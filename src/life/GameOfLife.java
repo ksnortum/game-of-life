@@ -2,29 +2,26 @@ package life;
 
 import life.controller.UniverseController;
 import life.model.Data;
-import life.model.GameOfLifeState;
-import life.model.Lock;
 import life.view.GameOfLifePanel;
 import life.view.UniverseView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 
 public class GameOfLife extends JFrame {
-    private final Lock lock = new Lock();
 
     public GameOfLife() {
         setLocationByPlatform(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Data data = buildGui();
-        data.setLock(lock);
         pack();
         setVisible(true);
 
         // Start evolving
         UniverseView universeView = new UniverseView(data);
         UniverseController universeController = new UniverseController(universeView);
+        data.getPauseButton().addItemListener(universeController);
+        data.getResetButton().addActionListener(universeController);
         universeController.evolve();
     }
 
@@ -36,22 +33,14 @@ public class GameOfLife extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
         JToggleButton pauseButton = new JToggleButton("Pause");
         pauseButton.setName("PlayToggleButton");
-        pauseButton.addItemListener(itemEvent -> {
-            if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                data.setState(GameOfLifeState.PAUSE);
-                pauseButton.setName("Run");
-            } else {
-                data.setState(GameOfLifeState.RESUME);
-                pauseButton.setName("Pause");
-                synchronized (lock) {
-                    lock.notify();
-                }
-            }
-        });
+        data.setPauseButton(pauseButton);
         buttonPanel.add(pauseButton);
-        // TODO Reset button
-        // TODO add to buttonPanel
-        add(buttonPanel);
+
+        JButton resetButton = new JButton("Reset");
+        resetButton.setName("ResetButton");
+        data.setResetButton(resetButton);
+        buttonPanel.add(resetButton);
+        buttonPanel.setPreferredSize(new Dimension(150, 30));
 
         // Text labels
         JPanel generationsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -60,6 +49,7 @@ public class GameOfLife extends JFrame {
         JLabel generationNumberLabel = new JLabel("#0");
         generationNumberLabel.setName("GenerationLabel");
         generationsPanel.add(generationNumberLabel);
+        generationsPanel.setPreferredSize(new Dimension(80, 10));
         data.setGenerationNumberLabel(generationNumberLabel);
 
         JPanel alivePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -68,20 +58,30 @@ public class GameOfLife extends JFrame {
         JLabel aliveNumberLabel = new JLabel("0");
         aliveNumberLabel.setName("AliveLabel");
         alivePanel.add(aliveNumberLabel);
+        alivePanel.setPreferredSize(new Dimension(80, 20));
         data.setAliveNumberLabel(aliveNumberLabel);
 
-        JPanel textDisplay = new JPanel();
-        textDisplay.setLayout(new BoxLayout(textDisplay, BoxLayout.Y_AXIS));
-        textDisplay.add(generationsPanel);
-        textDisplay.add(alivePanel);
-        add(textDisplay);
+        // Side panel
+        JPanel sidePanel = new JPanel();
+        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.add(buttonPanel);
+        sidePanel.add(generationsPanel);
+        sidePanel.add(alivePanel);
+        sidePanel.setPreferredSize(new Dimension(160, 70));
 
-        // Graphics
-        JPanel graphicDisplay = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // North panel is used to "push" the side panel up
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
+        northPanel.add(sidePanel);
+        northPanel.add(Box.createRigidArea(new Dimension(160, 420)));
+        add(northPanel);
+
+        // Graphics panel
+        JPanel graphicPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         GameOfLifePanel gameOfLifePanel = new GameOfLifePanel();
         data.setGameOfLifePanel(gameOfLifePanel);
-        graphicDisplay.add(gameOfLifePanel);
-        add(graphicDisplay);
+        graphicPanel.add(gameOfLifePanel);
+        add(graphicPanel);
 
         return data;
     }

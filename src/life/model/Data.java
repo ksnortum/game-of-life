@@ -8,8 +8,8 @@ public class Data {
     private GameOfLifePanel gameOfLifePanel = null;
     private JLabel generationNumberLabel;
     private JLabel aliveNumberLabel;
-    private GameOfLifeState state = GameOfLifeState.RESUME;
-    private Lock lock;
+    private JToggleButton pauseButton;
+    private JButton resetButton;
 
     public GameOfLifePanel getGameOfLifePanel() {
         return gameOfLifePanel;
@@ -35,19 +35,19 @@ public class Data {
         this.aliveNumberLabel = aliveNumberLabel;
     }
 
-    public GameOfLifeState getState() {
-        return state;
+    public JToggleButton getPauseButton() {
+        return pauseButton;
     }
 
-    public void setState(GameOfLifeState state) {
-        this.state = state;
+    public void setPauseButton(JToggleButton pauseButton) {
+        this.pauseButton = pauseButton;
     }
 
-    public Lock getLock() {
-        return lock;
+    public JButton getResetButton() {
+        return resetButton;
     }
 
-    public void setLock(Lock lock) {
-        this.lock = lock;
+    public void setResetButton(JButton resetButton) {
+        this.resetButton = resetButton;
     }
 }

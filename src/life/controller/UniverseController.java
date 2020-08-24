@@ -1,24 +1,31 @@
 package life.controller;
 
-import life.model.*;
+import life.model.Data;
+import life.model.GameOfLifeState;
+import life.model.GlobalData;
+import life.model.Universe;
 import life.view.UniverseView;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-public class UniverseController {
+public class UniverseController implements ItemListener, ActionListener {
     private final int side = GlobalData.SIDE;
     private final UniverseView universeView;
-    private final Data data;
-    private final Lock lock;
+    private final JToggleButton pauseButton;
+    private volatile Thread counterThread;
+    private final Object lock = new Object();
 
     private int generation = 1;
+    private GameOfLifeState state = GameOfLifeState.RESUME;
 
     public UniverseController(UniverseView universeView) {
         this.universeView = universeView;
-        data = universeView.getData();
-        lock = data.getLock();
+        Data data = universeView.getData();
+        pauseButton = data.getPauseButton();
     }
 
     public void evolve() {
@@ -26,42 +33,56 @@ public class UniverseController {
         universe.createUniverse();
         universeView.print(universe);
 
-        Timer timer = new Timer(GlobalData.TIME_BETWEEN_GENERATIONS, event -> {
-            if (data.getState() == GameOfLifeState.STOP) { // TODO implement
-                Timer timer1 = (Timer) event.getSource();
-                timer1.stop();
-            } else if (data.getState() == GameOfLifeState.PAUSE) {
-                System.out.println("In timer pause"); // debug
-                synchronized (lock) {
-                    while (data.getState() == GameOfLifeState.PAUSE) {
-                        try {
-                            System.out.println("  before wait"); // debug
-                            lock.wait();
-                        } catch (InterruptedException ignored) {
+        counterThread = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(GlobalData.TIME_BETWEEN_GENERATIONS);
+
+                    if (state == GameOfLifeState.PAUSE) {
+                        synchronized (lock) {
+                            while (state == GameOfLifeState.PAUSE) {
+                                lock.wait();
+                            }
                         }
-                        System.out.println("  after wait"); // debug
+                    } else if (state == GameOfLifeState.RESTART) {
+                        state = GameOfLifeState.RESUME;
+                        universe.createUniverse();
+                        universeView.print(universe);
+                        generation = 1;
+                        Thread.sleep(GlobalData.TIME_BETWEEN_GENERATIONS);
                     }
+                } catch (InterruptedException ignored) {
                 }
+
+                evolveOneGeneration(universe);
+                universe.setGenerationNumber(generation);
+                universeView.print(universe);
+                generation++;
             }
-
-            evolveOneGeneration(universe);
-            universe.setGenerationNumber(generation);
-            universeView.print(universe);
-            generation++;
         });
-        timer.setInitialDelay(1000);
-        timer.start();
+        counterThread.setDaemon(true);
+        counterThread.start();
+    }
 
-//        for (int generation = 2; generation <= GlobalData.NUMBER_OF_GENERATIONS; generation++) {
-//            evolveOneGeneration(universe);
-//            universe.setGenerationNumber(generation);
-//            universeView.print(universe);
-//
-//            try {
-//                Thread.sleep(GlobalData.TIME_BETWEEN_GENERATIONS);
-//            } catch (InterruptedException ignored) {
-//            }
-//        }
+    @Override
+    public void itemStateChanged(ItemEvent itemEvent) {
+        if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+            state = GameOfLifeState.PAUSE;
+            pauseButton.setText("Run");
+        } else {
+            state = GameOfLifeState.RESUME;
+            pauseButton.setText("Pause");
+            synchronized (lock) {
+                lock.notify();
+            }
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent actionEvent) {
+        if ("Reset".equals(actionEvent.getActionCommand())) {
+            state = GameOfLifeState.RESTART;
+        }
     }
 
     private void evolveOneGeneration(Universe universe) {

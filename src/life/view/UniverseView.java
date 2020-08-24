@@ -16,7 +16,6 @@ public class UniverseView {
         data.getAliveNumberLabel().setText(String.valueOf(universe.totalCellsAlive()));
         GameOfLifePanel gameOfLifePanel = data.getGameOfLifePanel();
         gameOfLifePanel.setUniverse(universe);
-        //gameOfLifePanel.repaint();
         int length = GlobalData.SIDE * GlobalData.PIXELS_PER_SIDE + GlobalData.EXTRA_PIXELS;
         gameOfLifePanel.paintImmediately(0, 0, length, length);
     }

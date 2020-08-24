@@ -26,12 +26,6 @@ public class GameOfLifePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Paint grid
-//        for (int i = 0; i < length + 2; i += side) {
-//            g.drawLine(0, i, length, i); // vertical line
-//            g.drawLine(i, 0, i, length); // horizontal line
-//        }
-
         // Paint cells
         if (universe == null) {
             return;
